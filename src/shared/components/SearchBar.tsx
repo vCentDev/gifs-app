@@ -1,4 +1,4 @@
-import { type FC, type KeyboardEvent, useState } from "react";
+import { type FC, type KeyboardEvent, useEffect, useState } from "react";
 
 interface Props {
   placeholder?: string;
@@ -7,6 +7,16 @@ interface Props {
 
 export const SearchBar: FC<Props> = ({ placeholder = 'Buscar', onQuery }) => {
   const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      onQuery(query)
+    }, 700);
+
+    return () => {
+      clearTimeout(timeoutId);
+    }
+  }, [query, onQuery])
 
   const handleSearch = () => {
     onQuery(query);
