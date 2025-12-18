@@ -5,18 +5,32 @@ import { CustomHeader } from './shared/components/CustomHeader';
 import { SearchBar } from './shared/components/SearchBar';
 import { PreviousSearches } from './gifs/components/PreviousSearches';
 
-import { mockGifs } from './mock-data/gifs.mock';
+import { getGifsByQuery } from './gifs/actions/get-gifs-by-query.action';
+import type { Gif } from './gifs/interfaces/gif.interface';
 
 export const GifsApp = () => {
-
-  const [previuousTerms, setPreviousTerms] = useState(['dragon ball z']);
+  const [gifs, setGifs] = useState<Gif[]>([]);
+  const [previuousTerms, setPreviousTerms] = useState<string[]>([]);
 
   const handleTermClicked = (term: string) => {
     console.log({ term });
   }
 
-  const handleSearch = (query: string) => {
-    console.log({ query });
+  const handleSearch = async (query: string = '') => {
+    query = query.trim().toLowerCase();
+
+    if (query.length === 0) return;
+
+    if (previuousTerms.includes(query)) {
+      console.warn('El término introducido ya existe!');
+      return;
+    }
+
+    setPreviousTerms([query, ...previuousTerms].slice(0, 3));
+
+    const gifs = await getGifsByQuery(query);
+    console.log(gifs);
+    setGifs(gifs)
   }
 
   return (
@@ -37,7 +51,7 @@ export const GifsApp = () => {
       <PreviousSearches searches={previuousTerms} onLabelClicked={handleTermClicked} />
 
       {/* Gifs */}
-      <GifList gifs={mockGifs} />
+      <GifList gifs={gifs} />
     </>
   );
 };
