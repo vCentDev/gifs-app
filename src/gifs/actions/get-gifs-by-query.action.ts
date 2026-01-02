@@ -3,6 +3,8 @@ import type { Gif } from '../interfaces/gif.interface';
 import { giphyApi } from '../api/giphy.api';
 
 export const getGifsByQuery = async (query: string): Promise<Gif[]> => {
+    if (query.trim().length === 0) return [];
+
     const response = await giphyApi<GiphyResponse>('/search', {
         params: {
             q: query,
